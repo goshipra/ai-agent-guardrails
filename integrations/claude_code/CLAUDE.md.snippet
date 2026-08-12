@@ -1,0 +1,64 @@
+# Sample CLAUDE.md snippet — wiring in ai-agent-guardrails
+
+Add a section like this to your project's `CLAUDE.md` so Claude (and anyone
+reading the repo) knows a guardrail is active, and add the hook config below
+to `.claude/settings.json` (project or user scope) so Claude Code actually
+invokes it.
+
+## 1. `.claude/settings.json` hook registration
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /absolute/path/to/ai-agent-guardrails/integrations/claude_code/pretooluse_hook.py"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Adjust the path to wherever you cloned/installed `ai-agent-guardrails`, and
+confirm the `hooks` schema against your installed Claude Code version's docs
+(`claude --help` / the Claude Code hooks reference) — the hook config shape
+has changed across releases, and `pretooluse_hook.py`'s docstring spells out
+exactly which parts of the contract this integration assumes.
+
+## 2. CLAUDE.md section
+
+```markdown
+## Safety guardrails
+
+This repo has ai-agent-guardrails wired in as a Claude Code PreToolUse hook
+(see `.claude/settings.json`). Before any Bash tool call executes, it is
+evaluated against the policy set in `ai-agent-guardrails/policies/default.yaml`:
+
+- BLOCK-tier commands (unreviewed `terraform destroy`, `kubectl delete
+  namespace`/`--all`, unscoped `rm -rf`, force-push to main/master/production,
+  IAM wildcard policy grants, MFA/IAM-identity deletion) are refused before
+  they run — Claude will see the block reason and should treat it the same
+  as a failed command, not retry around it.
+- WARN-tier commands (destructive SQL outside a migration file, `curl | bash`,
+  force-push to a non-protected branch) are allowed to proceed but are logged;
+  treat a WARN in the transcript as a prompt to double-check the command was
+  actually intended.
+
+Every evaluation — allowed, warned, or blocked — is appended to
+`~/.guardrails/audit.jsonl` for review.
+```
+
+## 3. Sanity-check the wiring
+
+```bash
+echo '{"hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"terraform destroy"}}' \
+  | python3 /absolute/path/to/ai-agent-guardrails/integrations/claude_code/pretooluse_hook.py
+# should print a JSON block decision to stdout, a "[guardrails] BLOCKED ..." line to stderr,
+# and exit with code 2.
+```

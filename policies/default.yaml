@@ -1,0 +1,115 @@
+# Default threat-model policy for ai-agent-guardrails.
+#
+# Each rule is either:
+#   - "pattern": a regex evaluated against the raw command string (re.search,
+#     case-insensitive by default), or
+#   - "check": the name of a Python function in guardrails/checks.py used when
+#     the decision needs more than a regex (e.g. "was there a plan reviewed
+#     earlier in this session?", "which branch is this push targeting?").
+#
+# Rules are evaluated in order. If multiple rules match, the worst action
+# wins (BLOCK > WARN > ALLOW); see PolicyEngine.evaluate() for the exact
+# precedence logic. Every rule must carry a human-readable `reason` — this is
+# what gets shown to the human/agent and written to the audit log, so explain
+# the *why*, not just "blocked by rule X".
+
+rules:
+  - id: terraform_destroy_unreviewed
+    action: BLOCK
+    check: terraform_destroy_unreviewed
+    reason: >
+      'terraform destroy' with no -target and no evidence a plan was
+      generated and reviewed first (a preceding 'terraform plan -out=' in
+      this session) can tear down an entire state file's worth of
+      infrastructure with no human having seen what will actually be
+      deleted. Scope the blast radius with -target, or run and review
+      'terraform plan -out=<file>' before destroying.
+
+  - id: kubectl_delete_namespace
+    action: BLOCK
+    pattern: '(?i)\bkubectl\b[^|;&\n]*\bdelete\b[^|;&\n]*\b(namespace|ns)\b\s+\S+'
+    reason: >
+      Deleting a Kubernetes namespace deletes every resource inside it
+      (pods, services, secrets, PVCs, config) with no per-resource
+      confirmation and no easy undo. This is almost always broader than
+      what an agent should be allowed to do unattended.
+
+  - id: kubectl_delete_all
+    action: BLOCK
+    pattern: '(?i)\bkubectl\b[^|;&\n]*\bdelete\b[^|;&\n]*--all\b'
+    reason: >
+      'kubectl delete ... --all' removes every object of the given kind in
+      the target namespace/cluster in one shot. It is functionally
+      equivalent to a namespace wipe for that resource kind and should
+      require an explicit, reviewed, human-issued command rather than
+      autonomous agent execution.
+
+  - id: rm_rf_dangerous
+    action: BLOCK
+    check: rm_rf_dangerous
+    reason: >
+      'rm -rf' targeting a filesystem root, the home directory, the current
+      directory, or with no path argument at all is one of the few Unix
+      commands that can destroy an entire machine irreversibly and near-
+      instantly. Scope deletions to a specific, non-root subdirectory.
+
+  - id: git_push_force_protected_branch
+    action: BLOCK
+    check: git_push_force_protected_branch
+    reason: >
+      Force-pushing (--force / -f) to main/master/production rewrites
+      shared history that other engineers and CI/CD may already depend on,
+      and can silently drop merged commits. This must be a deliberate,
+      reviewed human action, never an autonomous agent one.
+
+  - id: git_push_force_other_branch
+    action: WARN
+    check: git_push_force_other_branch
+    reason: >
+      Force-pushing rewrites history. It's lower-risk on a non-protected
+      branch (e.g. a personal feature branch) but can still clobber a
+      collaborator's work if the branch is shared, so it's surfaced as a
+      warning rather than a silent allow.
+
+  - id: iam_wildcard_policy
+    action: BLOCK
+    check: iam_wildcard_policy
+    reason: >
+      An IAM policy statement combining "Resource": "*" with a broad action
+      grant (iam:*, *:*, etc.) grants effectively unrestricted access to
+      every resource in the account. This is one of the most common causes
+      of cloud account takeover and should never be applied without
+      explicit human review.
+
+  - id: mfa_or_iam_identity_destructive
+    action: BLOCK
+    patterns:
+      - '(?i)\baws\s+iam\s+(deactivate-mfa-device|delete-virtual-mfa-device|delete-user|delete-access-key|delete-login-profile)\b'
+      - '(?i)\bgcloud\b.*\bmfa\b.*\bdisable\b'
+      - '(?i)\baz\s+ad\s+user\s+update\b.*--account-enabled\s+false\b'
+    reason: >
+      Disabling MFA or deleting an IAM user / access key removes an
+      identity's ability to authenticate, or removes a security control
+      protecting an identity. Done accidentally (or by a compromised/
+      misbehaving agent) this can lock out legitimate operators or open a
+      security hole, so it always requires explicit human action.
+
+  - id: sql_destructive_outside_migration
+    action: WARN
+    check: sql_destructive_outside_migration
+    reason: >
+      DROP TABLE / DROP DATABASE / TRUNCATE TABLE are irreversible outside
+      of a transaction with a backup. Inside a clearly-named migration or
+      rollback file this is expected and reviewable via code review; run
+      ad hoc against a live database it is much easier to nuke the wrong
+      table by mistake, so it's flagged for a second look.
+
+  - id: curl_pipe_shell
+    action: WARN
+    pattern: '(?i)\b(curl|wget)\b[^|;&\n]*\|\s*(sudo\s+)?(sh|bash|zsh)\b'
+    reason: >
+      Piping a remote download directly into a shell executes unreviewed,
+      unpinned, potentially-mutable remote code with no chance to inspect
+      it first. It's a common supply-chain attack vector, so it's flagged
+      for review rather than run silently (downloading and inspecting the
+      script first is the safer alternative).

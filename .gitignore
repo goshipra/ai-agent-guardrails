@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.installed.cfg
+*.egg
+
+# venv
+.venv/
+venv/
+env/
+
+# test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# guardrails runtime artifacts (default audit log lives in ~/.guardrails/,
+# outside this repo; these cover the case it's pointed in-repo instead)
+.guardrails/
+*.jsonl
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
