@@ -11,8 +11,6 @@ license = { text = "MIT" }
 authors = [{ name = "Shipra Rathore" }]
 requires-python = ">=3.9"
 keywords = ["ai-safety", "guardrails", "policy-engine", "autonomous-agents", "claude-code"]
-homepage = "https://github.com/goshipra/ai-agent-guardrails"
-repository = "https://github.com/goshipra/ai-agent-guardrails"
 dependencies = [
     "pyyaml>=6.0",
 ]
@@ -23,6 +21,10 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Topic :: Software Development :: Quality Assurance",
 ]
+
+[project.urls]
+Homepage = "https://github.com/goshipra/ai-agent-guardrails"
+Repository = "https://github.com/goshipra/ai-agent-guardrails"
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]
