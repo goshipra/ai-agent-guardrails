@@ -1,5 +1,6 @@
 # ai-agent-guardrails
 
+[![CI](https://github.com/goshipra/ai-agent-guardrails/actions/workflows/ci.yml/badge.svg)](https://github.com/goshipra/ai-agent-guardrails/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/ai-agent-guardrails)](https://pypi.org/project/ai-agent-guardrails/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/ai-agent-guardrails)](https://pypi.org/project/ai-agent-guardrails/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -22,6 +23,8 @@ logging. This project is a small, concrete, working example of that layer:
 not a framework, not a platform, just the policy engine, an audit trail, a
 CLI, and one real integration (Claude Code), built to be read end-to-end in
 one sitting.
+
+![guard CLI blocking a terraform destroy and a force-push, allowing npm install](demo.gif)
 
 ## Threat model
 
