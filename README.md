@@ -1,5 +1,9 @@
 # ai-agent-guardrails
 
+[![PyPI](https://img.shields.io/pypi/v/ai-agent-guardrails)](https://pypi.org/project/ai-agent-guardrails/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/ai-agent-guardrails)](https://pypi.org/project/ai-agent-guardrails/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A small, tool-agnostic policy layer that sits between an autonomous AI coding
 agent and the shell: it intercepts a proposed command, checks it against a
 declarative threat model, and blocks the genuinely destructive ones —
