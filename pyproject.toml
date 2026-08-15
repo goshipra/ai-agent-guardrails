@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-agent-guardrails"
-version = "0.1.0"
+version = "0.1.1"
 description = "A tool-agnostic policy layer that intercepts and blocks destructive commands proposed by autonomous AI coding agents, with full audit logging."
 readme = "README.md"
 license = { text = "MIT" }
@@ -36,4 +36,4 @@ guard = "guardrails.cli:main"
 include = ["guardrails*"]
 
 [tool.setuptools.package-data]
-guardrails = ["*.yaml"]
+guardrails = ["*.yaml", "policies/*.yaml"]

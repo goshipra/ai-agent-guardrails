@@ -28,7 +28,7 @@ one sitting.
 
 ## Threat model
 
-Every rule lives in [`policies/default.yaml`](policies/default.yaml) as a
+Every rule lives in [`guardrails/policies/default.yaml`](guardrails/policies/default.yaml) as a
 regex or a small Python check function (see
 [`guardrails/checks.py`](guardrails/checks.py) for the ones that need more
 than a regex — e.g. "was a plan reviewed earlier in this session?").
@@ -52,14 +52,14 @@ known-dangerous patterns, not a default-deny sandbox.
 ## Architecture
 
 ```
-                 ┌────────────────────────┐
- proposed        │                        │      ALLOW  ──▶ command runs
- shell command ──▶│      PolicyEngine      │
- + context        │  (policies/*.yaml +    │      WARN   ──▶ command runs,
-                 │   guardrails/checks.py) │                 reason logged
-                 └───────────┬────────────┘
-                             │                     BLOCK  ──▶ command refused,
-                             ▼                                reason surfaced
+                  ┌──────────────────────────────┐
+ proposed         │                               │      ALLOW  ──▶ command runs
+ shell command ──▶│        PolicyEngine           │
+ + context        │  (guardrails/policies/*.yaml  │      WARN   ──▶ command runs,
+                   │   + guardrails/checks.py)     │                 reason logged
+                   └──────────────┬────────────────┘
+                                  │                     BLOCK  ──▶ command refused,
+                                  ▼                                reason surfaced
                   ┌─────────────────────┐
                   │     AuditLogger      │  ──▶  ~/.guardrails/audit.jsonl
                   │ (JSON lines, one     │        (tail into Loki/ELK/
@@ -167,7 +167,7 @@ hardened production security boundary. In particular:
 
 ### Extending the policy set
 
-Add a rule to `policies/default.yaml`:
+Add a rule to `guardrails/policies/default.yaml`:
 
 ```yaml
 - id: my_new_rule

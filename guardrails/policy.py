@@ -23,7 +23,7 @@ Action = Literal["ALLOW", "BLOCK", "WARN"]
 # Worse (more restrictive) wins when multiple rules match the same command.
 _ACTION_SEVERITY = {"ALLOW": 0, "WARN": 1, "BLOCK": 2}
 
-DEFAULT_POLICY_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "policies")
+DEFAULT_POLICY_DIR = os.path.join(os.path.dirname(__file__), "policies")
 
 
 @dataclass
