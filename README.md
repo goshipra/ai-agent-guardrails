@@ -187,6 +187,14 @@ regressions in either direction.
 
 ---
 
-This is part of a small set of AI-infrastructure portfolio projects; sibling
-repos (`rag-mlops-pipeline`, `llm-observability-stack`, `ai-infra-terraform`)
-cover the rest of the stack — no links yet since they may not all be pushed.
+This is part of a small set of AI-infrastructure portfolio projects:
+
+- [ai-incident-copilot](https://github.com/goshipra/ai-incident-copilot) — on-call copilot that depends on this package for real to gate its proposed remediations
+- [ai-agent-chaos](https://github.com/goshipra/ai-agent-chaos) — fault-injecting proxy that deliberately breaks an LLM/vector-DB backend the specific ways it breaks in production
+- [rag-mlops-pipeline](https://github.com/goshipra/rag-mlops-pipeline) — RAG service with a CI-gated evaluation harness
+- [llm-observability-stack](https://github.com/goshipra/llm-observability-stack) — Prometheus/Grafana observability for LLM services
+- [ai-infra-terraform](https://github.com/goshipra/ai-infra-terraform) — Terraform provisioning the full stack
+
+Full writeup, including a fail-open packaging bug in this exact package
+that only surfaced when `ai-incident-copilot` depended on it for real:
+[goshipra.github.io/posts/incident-copilot-bug.html](https://goshipra.github.io/posts/incident-copilot-bug.html)
