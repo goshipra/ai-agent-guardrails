@@ -102,6 +102,25 @@ Every call above appends a JSON record to `~/.guardrails/audit.jsonl`.
 Global flags (`--json`, `--audit-log`, `--policy-dir`, `--context`,
 `--no-audit`) go **before** the subcommand, e.g. `guard --json check "..."`.
 
+## Security & Pre-Commit Checks
+
+**This project has a ZERO-TOLERANCE policy for secrets, PII, or any security leaks.**
+
+Before every commit, run:
+
+```bash
+git diff --staged | grep -iE '(password|secret|token|key|credential|api)'
+```
+
+If anything matches, **do not commit**. See [`SECURITY.md`](SECURITY.md) for:
+- Complete pre-commit checklist (mandatory)
+- What counts as a leak (includes "tiny" ones)
+- How to fix if you accidentally commit a secret
+- Automated prevention (`.gitignore`, pre-commit hooks)
+- PII scanning patterns (email, phone, SSN)
+
+**Zero tolerance. Every commit must be safe. No exceptions.**
+
 ## Claude Code integration
 
 [`integrations/claude_code/pretooluse_hook.py`](integrations/claude_code/pretooluse_hook.py)

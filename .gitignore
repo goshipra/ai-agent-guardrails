@@ -1,32 +1,193 @@
-# Python
+# ============================================================================
+# SECURITY: Credentials, Secrets, Personal Data — ZERO TOLERANCE POLICY
+# ============================================================================
+# NO environment variables, API keys, SSH keys, passwords, or personal data
+# should EVER be committed to this repo.
+
+# Environment variables & configuration (CRITICAL)
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# Credentials & Secrets (CRITICAL)
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+id_rsa*
+id_ed25519*
+id_ecdsa*
+id_dsa*
+*.pub                          # SSH public keys (usually safe but double-check)
+credentials.json
+credentials.yaml
+secrets.yaml
+secrets.json
+secrets.env
+.aws/
+.gcp/
+~/.kube/config
+
+# API Keys & Tokens (CRITICAL)
+.api_keys
+.tokens
+auth_token
+api_key
+access_token
+refresh_token
+
+# Cloud credentials (CRITICAL)
+google-cloud-key.json
+firebase-key.json
+service-account.json
+
+# ============================================================================
+# Python Build & Test Artifacts
+# ============================================================================
+
 __pycache__/
 *.py[cod]
 *$py.class
-*.egg-info/
-.eggs/
+*.so
+.Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
-# venv
+# ============================================================================
+# Virtual Environments
+# ============================================================================
+
 .venv/
+.venv
 venv/
+venv
 env/
+env
+ENV/
+ENV
+.env.venv
 
-# test / coverage
+# ============================================================================
+# Testing & Coverage
+# ============================================================================
+
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
 .mypy_cache/
+.dmypy.json
+dmypy.json
 .ruff_cache/
+*.cover
+.hypothesis/
+.tox/
+.nox/
+coverage.xml
 
-# guardrails runtime artifacts (default audit log lives in ~/.guardrails/,
-# outside this repo; these cover the case it's pointed in-repo instead)
+# ============================================================================
+# Runtime Artifacts & Logs
+# ============================================================================
+
 .guardrails/
 *.jsonl
+*.log
+*.log.*
+audit.jsonl
+audit.log
 
-# editors / OS
+# ============================================================================
+# Editors & IDEs
+# ============================================================================
+
 .vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+.vim/
+.netrwhist
+*.sublime-settings
+.project
+.pydevproject
+.settings/
+.classpath
+
+# ============================================================================
+# OS-Specific
+# ============================================================================
+
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# ============================================================================
+# IDE Workspace & Temporary Files
+# ============================================================================
+
+*.swp
+*.swo
+*~
+.*.swp
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+.apt_generated
+*.lnk
+
+# ============================================================================
+# Local Development
+# ============================================================================
+
+.local/
+.scratch/
+scratch/
+tmp/
+temp/
+*.tmp
+.todo
+.notes
+
+# ============================================================================
+# Build & Package Output
+# ============================================================================
+
+*.whl
+dist/
+build/
+*.egg-info/
+.eggs/
+*.egg
