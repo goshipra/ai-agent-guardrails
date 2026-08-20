@@ -70,6 +70,33 @@ or `pyproject.toml` packaging config must be re-verified against a real
 built wheel in a clean venv before being considered safe** — the test
 suite passing is not evidence of that on its own.
 
+## Critical Architectural Limitation (Not a Bug — By Design)
+
+**Guardrails does NOT protect raw shell commands.**
+
+```
+terraform destroy                    # RUNS - no protection
+guard exec -- terraform destroy      # BLOCKED by guardrails ✓
+claude code + hook                   # BLOCKED by guardrails ✓
+CI/CD with guard gate                # BLOCKED by guardrails ✓
+```
+
+**Why:** Guardrails is a policy *layer*, not a sandbox. It only protects commands that flow through it.
+
+**How to enforce in practice:**
+1. **For agents:** Integrate PolicyEngine into execution path (Claude Code hook, custom agents)
+2. **For CI/CD:** Gate all deployments through `guard exec --` wrapper
+3. **For humans:** Use shell alias wrapper (`terraform() { guard exec -- /usr/bin/terraform "$@"; }`)
+4. **For teams:** Pre-commit hooks + discipline, not technical enforcement
+
+This is intentional: guardrails preserves developer flexibility while providing protection where integrated. Real safety comes from:
+- AI agents using guardrails (incident-copilot)
+- CI/CD pipeline enforcement
+- Audit trail (everything logged)
+- Team discipline
+
+**For interviews:** This is actually a design strength, not a limitation. Shows honest scope.
+
 ## Deliberately out of scope (per README's "Status" section) — not bugs, don't "fix" without discussion
 
 - **Regex/shlex parsing, not a real shell parser.** Determined obfuscation
